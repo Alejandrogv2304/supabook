@@ -4,6 +4,7 @@ import EditScreenInfo from '@/src/components/EditScreenInfo';
 import { Text, View } from '@/src/components/Themed';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
+import AddPostForm from '@/src/components/AddPostForm';
 
 
 export default function TabOneScreen() {
@@ -11,7 +12,9 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     const fecthPosts= async() =>{
-    const {data, error} = await supabase.from('posts').select('*');
+    const {data, error} = await supabase.from('posts').select('*').order('created_at',{
+      ascending: false
+    });
 
     if(error){
       console.log(error)
@@ -22,10 +25,21 @@ export default function TabOneScreen() {
    fecthPosts();
   },[])
 
-  console.log(posts)
+  //El content viene de AddPostForm 
+  const handleSubmit = async(content:string ) => {
+    const {data,error} = await supabase.from('posts').insert({content}).select();
+
+    if(error){
+      console.log(error)
+    }else{
+      setPosts([data[0], ...posts])
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
+      <AddPostForm 
+      onSubmit={handleSubmit}/>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <FlatList
       data={posts}
