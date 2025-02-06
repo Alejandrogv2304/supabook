@@ -5,24 +5,15 @@ import { Text, View } from '@/src/components/Themed';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
 import AddPostForm from '@/src/components/AddPostForm';
+import { fecthPosts, Posts } from '@/src/lib/api';
 
 
-export default function TabOneScreen() {
-  const [posts,setPosts] = useState([])
+export default function HomeScreen() {
+  const [posts,setPosts] = useState<Posts>([])
 
   useEffect(() => {
-    const fecthPosts= async() =>{
-    const {data, error} = await supabase.from('posts').select('*').order('created_at',{
-      ascending: false
-    });
-
-    if(error){
-      console.log(error)
-    }else{
-      setPosts(data)
-    }
-    }
-   fecthPosts();
+    
+   fecthPosts().then(data => setPosts(data));
   },[])
 
   //El content viene de AddPostForm 
